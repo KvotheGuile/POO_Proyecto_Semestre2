@@ -13,4 +13,3 @@ Margarita
 broken leg
 Dog
 small
-~~~~
