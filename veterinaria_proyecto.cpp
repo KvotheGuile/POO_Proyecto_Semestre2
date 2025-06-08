@@ -258,6 +258,14 @@ public:
         std::cout << name << " is now " << (this->open ? "open." : "closed.") << std::endl;
     }
 
+    virtual void info()
+    {
+        std::cout<<"Name:             "<<name<<'\n';
+        std::cout<<"Type:             "<<type<<'\n';
+        std::cout<<"Person in charge: "<<inCharge->getName()<<'\n';
+        //std::cout<<"Open:             "<< (open ? "True" : "False") << '\n';
+    }
+
     virtual ~Room() { std::cout << name << " has been destroyed." << std::endl; }
 };
 
@@ -323,6 +331,17 @@ public:
         animal->diagnosticate(diagnosis);
     }
 
+    void info() override {
+        Room::info();
+        std::cout<<"Veterinarian:     "<<veterinarian->getName()<<'\n';
+        std::cout<<"Occupied:         "<< (occupied ? "True" : "False") <<'\n';
+
+        if (patient != nullptr)
+        {
+            std::cout<<"Current Patient:  "<<patient->getName()<<"("<<patient->getType()<<")"<<'\n';
+        }
+    }
+
     ~ExamRoom() override { std::cout << getName() << " has been destroyed." << std::endl; }
 };
 
@@ -332,12 +351,19 @@ private:
     Employee *receptionist;
 
 public:
-    Reception(std::string name, Employee *inCharge, Employee *receptionist)
-        : Room(name, inCharge, "Reception"), buildingName(name), receptionist(receptionist) {}
+    Reception(std::string name, Employee *inCharge, Employee *receptionist, std::string buildingName)
+        : Room(name, inCharge, "Reception"), buildingName(buildingName), receptionist(receptionist) {}
 
     void enter() override {
         std::cout << "Welcome to " << buildingName << "!" << std::endl;
         std::cout << "My name is " << receptionist->getName() << "." << std::endl;
+    }
+
+    void info() override 
+    {
+        Room::info();
+        std::cout<<"Building's Name:  "<<buildingName<<'\n';
+        std::cout<<"Receptionist:     "<<receptionist->getName()<<'\n';
     }
 
     ~Reception() override { std::cout << getName() << " has been destroyed." << std::endl; }
@@ -368,7 +394,7 @@ class VetClinic
         rooms.push_back(new ExamRoom("Exam Room A", employees[0], (Veterinarian*)employees[0]));
         rooms.push_back(new ExamRoom("Exam Room B", employees[0], (Veterinarian*)employees[1]));
 
-        reception = new Reception("Lobby", employees[2], employees[2]);
+        reception = new Reception("Lobby", employees[2], employees[2], "Vente Rinaria Clinic");
         rooms.push_back(reception);
     };
 
@@ -557,7 +583,7 @@ class VetClinic
         std::cout<<"\n\n~~~ ROOMS: ~~~\n";
         for (Room* room : rooms)
         {
-            std::cout<<room->getName();
+            room->info();
             std::cout<<'\n';
         }
     };
