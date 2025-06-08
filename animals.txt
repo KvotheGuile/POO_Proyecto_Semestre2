@@ -15,6 +15,6 @@ Dog
 small
 Rodolf
 Grinch
-red nose
+undiagnosed
 Cat
 1

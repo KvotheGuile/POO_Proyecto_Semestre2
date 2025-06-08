@@ -252,7 +252,7 @@ public:
     void setInCharge(Employee *inCharge) { this->inCharge = inCharge; }
 
     virtual void enter() {
-        std::cout << "Welcome to room: " << name << "!" << std::endl;
+        std::cout << "\nWelcome to room: " << name << "!" << std::endl;
         std::cout << inCharge->getName() << " is in charge of this room." << std::endl;
     }
 
@@ -268,6 +268,11 @@ public:
         std::cout<<"Person in charge: "<<inCharge->getName()<<'\n';
         //std::cout<<"Open:             "<< (open ? "True" : "False") << '\n';
     }
+
+    virtual void reset()
+    {
+        open = true;
+    };
 
     virtual ~Room() { std::cout << name << " has been destroyed." << std::endl; }
 };
@@ -291,6 +296,7 @@ public:
 
     void occupy(bool occupied) {
         this->occupied = occupied;
+        patient = nullptr;
         std::cout << getName() << " is now " << (this->occupied ? "occupied." : "free to use.") << std::endl;
     }
 
@@ -298,7 +304,7 @@ public:
         if (occupied) {
             std::cout << "You cannot enter. This room is occupied." << std::endl;
         } else {
-            std::cout << "Welcome to room: " << getName() << "!" << std::endl;
+            std::cout << "\nWelcome to room: " << getName() << "!" << std::endl;
             std::cout << getInCharge()->getName() << " is in charge of this room." << std::endl;
             occupy(true);
         }
@@ -333,6 +339,12 @@ public:
         }
     }
 
+    void reset() override 
+    {
+        Room::reset();
+        occupy(false);
+    }
+
     ~ExamRoom() override { std::cout << getName() << " has been destroyed." << std::endl; }
 };
 
@@ -346,7 +358,7 @@ public:
         : Room(name, inCharge, "Reception"), buildingName(buildingName), receptionist(receptionist) {}
 
     void enter() override {
-        std::cout << "Welcome to " << buildingName << "!" << std::endl;
+        std::cout << "Welcome to " << buildingName << "!|" << std::endl;
         std::cout << "My name is " << receptionist->getName() << "." << std::endl;
     }
 
@@ -668,6 +680,8 @@ class VetClinic
         return nullptr;
     };
 
+    Reception *getReception() { return (Reception*)reception; }
+
     Animal *getAnimalByID(int id)
     {
         for (Animal* animal : animals)
@@ -686,6 +700,15 @@ class VetClinic
         animal->introduce();
         animal->sound();
     };
+
+    void resetRooms()
+    {
+        for (Room *room : rooms)
+        {
+            if (room->getType() == "Reception") continue;
+            room->reset();
+        }
+    };
 };
 
 class Menu
@@ -702,8 +725,9 @@ class Menu
 
     void welcomeMessage()
     {
-        std::cout<<"WELCOME\n\n";
-        std::cout<<"Type 'help' to get started\n";
+        std::cout<<"~~~~ START ~~~~\n\n\n";
+        clinic->getReception()->enter();
+        std::cout<<"\nType 'help' to get started\n";
     };
 
     void play()
@@ -782,6 +806,7 @@ class Menu
             int id = getIntInput(input, "diagnosticate ");
             if (id == -1) return;
             clinic->animalExam(id);
+            return;
         } else if (input == "discharge all"){
             clinic->dischargeAnimalAll(); return;
         } else if (input.rfind("discharge", 0) == 0){
@@ -789,7 +814,10 @@ class Menu
             if (id == -1) return;
             clinic->dischargeAnimal(id);
             return;
-        } 
+        } else if (input == "reset rooms")
+        {
+            clinic->resetRooms(); return;
+        };
 
         std::cout<<"Unknown command: " << input <<'\n';
         std::cout<<"Try typing \"help\"\n";
@@ -803,6 +831,7 @@ class Menu
         std::cout<<"- diagnosticate all\n";
         std::cout<<"- discharge <ID>\n";
         std::cout<<"- discharge all\n";
+        std::cout<<"- reset rooms\n";
         std::cout<<"- exit\n";
         std::cout<<"\nINFO: \n";
         std::cout<<"- help\n";
