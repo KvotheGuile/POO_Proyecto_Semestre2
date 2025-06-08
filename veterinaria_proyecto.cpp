@@ -676,7 +676,7 @@ class VetClinic
             if (!eRoom->getOccupied()) return eRoom;
         }
 
-        std::cout<<"There isn't a free exam room.\n";
+        std::cout<<"\nRight now there isn't a free exam room.\n";
         return nullptr;
     };
 
