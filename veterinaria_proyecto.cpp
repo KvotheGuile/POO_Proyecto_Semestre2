@@ -197,10 +197,13 @@ class Veterinarian : public Employee {
         void performJob() override {
             std::cout << getName() << " is treating an animal" << std::endl;
         }
+        std::string getShift(){ return shift; }
+
     // Destructor
         ~Veterinarian() {
             std::cout << "veterinarian was destroyed" << std::endl;
         }
+
 };
 
 class Administrator : public Employee {
@@ -215,6 +218,8 @@ class Administrator : public Employee {
         void performJob() override {
             std::cout << getName() << " is supervising everything" << std::endl;
         }
+        std::string getShift(){ return shift; }
+
     // Destructor
         ~Administrator() {
             std::cout << "admin was destroyed" << std::endl;
@@ -468,8 +473,36 @@ class VetClinic
         f.close();
     };
 
+    void saveEmployees()
+    {
+        std::ofstream f("employees.txt");
+        for (Employee *employee: employees)
+        {
+            f << employee->getType() << std::endl;
+            f << employee->getName() << std::endl;
+            f << employee->getSalary() << std::endl;
+
+            if (employee->getType() == "veterinarian"){
+                f << ((Veterinarian*)employee)->getShift()<<std::endl;
+            }else if (employee->getType() == "administrator"){
+                f << ((Administrator*)employee)->getShift()<<std::endl;
+            }else{
+                f << "9:00-12:00"<<std::endl;
+            }
+        }
+        f.close();
+    }
+
+    void saveAnimals()
+    {
+
+    }
+
     ~VetClinic()
     {
+        saveEmployees();
+        saveAnimals();
+
         for (Employee *ptrEmployee : employees)
             delete ptrEmployee;
 
