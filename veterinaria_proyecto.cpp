@@ -425,9 +425,11 @@ class VetClinic
         }
     };
 
-    void animalExam(std::string animalID)
+    void animalExam(int animalID)
     {
-
+        Animal *animal = getAnimalByID(animalID);
+        if (animal == nullptr) return;
+        animalExam(animal);
     }
 
     void animalExam(Animal *animal)
@@ -458,7 +460,8 @@ class VetClinic
             if (animal->getPatientID() == id) 
                 return animal;
         }
-
+        
+        std::cout<<"No animal has the ID "<<id<<"\n";
         return nullptr;
     }
 
@@ -556,10 +559,12 @@ class Menu
             int id = getIntInput(input, "animal info ");
             if (id == -1) return;
             Animal *animal = clinic->getAnimalByID(id);
-            if (animal == nullptr) {
-                std::cout<<"No animal has the ID "<<id<<"\n"; return; 
-            }
+            if (animal == nullptr) { return; }
             animal->print();
+        } else if (input.rfind("diagnosticate", 0) == 0){
+            int id = getIntInput(input, "diagnosticate ");
+            if (id == -1) return;
+            clinic->animalExam(id);
         }
     }
 
@@ -567,6 +572,7 @@ class Menu
     {
         std::cout<<"COMMANDS:\n";
         std::cout<<"- add animal\n";
+        std::cout<<"- diagnosticate <ID>\n";
         std::cout<<"- exit\n";
         std::cout<<"\nINFO: \n";
         std::cout<<"- help\n";
