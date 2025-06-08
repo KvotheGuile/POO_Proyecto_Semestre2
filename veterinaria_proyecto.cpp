@@ -495,7 +495,22 @@ class VetClinic
 
     void saveAnimals()
     {
-
+        std::ofstream f("animals.txt");
+        for (Animal *animal: animals)
+        {
+            f << animal->getName() << '\n';
+            f << animal->getOwnerName() << '\n';
+            f << animal->getDiagnosis()<< '\n';
+            f << animal->getType() << '\n';
+            
+            if (animal->getType() == "Cat"){
+                f << ((Cat*)animal)->getLikesPeople()<< '\n';
+            }else if (animal->getType() == "Dog")
+            {
+                f << ((Dog*)animal)->getSize()<< '\n';
+            }else{ f << "-"; }
+        }
+        f.close();
     }
 
     ~VetClinic()
