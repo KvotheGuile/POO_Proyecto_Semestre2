@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 
 class Animal {
     private:
@@ -299,18 +300,6 @@ public:
             std::cout << getInCharge()->getName() << " is in charge of this room." << std::endl;
             occupy(true);
         }
-    }
-
-    Animal* treatAnimal()
-    {
-        if (patient == nullptr) return nullptr;
-
-        Animal *treatedAnimal = patient;
-
-        std::cout<<patient->getName()<<" has been given treatment for their "<<patient->getDiagnosis();
-        patient = nullptr;
-        occupy(false);
-        return treatedAnimal;
     }
 
     void examine(Animal *animal)
@@ -623,6 +612,32 @@ class VetClinic
 
         examRoom->examine(animal);
     };
+
+    void dischargeAnimal(int animalID)
+    {
+        Animal *animal = getAnimalByID(animalID);
+        if (animal == nullptr) return;
+        dischargeAnimal(animal);
+    }
+
+    void dischargeAnimal(Animal *animal)
+    {
+        if (!animal->diagnosticated()){
+            std::cout<<animal->getName()<<" has not been diagnosticated. It cannot leave yet.";
+            return;
+        }
+
+        std::vector<Animal*>::iterator position = std::find(animals.begin(), animals.end(), animal);
+        if (position != animals.end())
+        {
+            animals.erase(position);
+            std::cout<<animal->getName()<<" has been discharged from the clinic."; 
+            delete animal;
+            return;
+        }
+
+        std::cout<<animal->getName()<<" is not in the system";
+    }
 
     ExamRoom *getExamRoom()
     {
