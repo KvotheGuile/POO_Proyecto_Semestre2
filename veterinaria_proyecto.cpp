@@ -100,7 +100,8 @@ class Dog : public Animal
 
     ~Dog() override
     {
-        std::cout<<"The dog "<<getName()<<" has checked out of the system\n";
+        //std::cout<<"The dog "<<getName()<<" has checked out of the system\n";
+        std::cout<<"The dog ";
     }
 };
 
@@ -131,7 +132,8 @@ class Cat : public Animal
 
     ~Cat() override
     {
-        std::cout<<"The cat "<<getName()<<" has checked out of the system\n";
+        //std::cout<<"The cat "<<getName()<<" has checked out of the system\n";
+        std::cout<<"The cat ";
     }
 };
 
@@ -594,24 +596,38 @@ class VetClinic
         for (Animal* animal : animals)
         {
             if (!animal->diagnosticated())
-                animalExam(animal);
+            {
+                bool successfulExam = animalExam(animal);
+                if (!successfulExam) return;
+            }
         }
     };
 
-    void animalExam(int animalID)
+    bool animalExam(int animalID)
     {
         Animal *animal = getAnimalByID(animalID);
-        if (animal == nullptr) return;
-        animalExam(animal);
+        if (animal == nullptr) return false;
+        return animalExam(animal);
     }
 
-    void animalExam(Animal *animal)
+    bool animalExam(Animal *animal)
     {
         ExamRoom *examRoom = getExamRoom();
-        if (examRoom == nullptr) return;
-
+        if (examRoom == nullptr) return false;
+        
         examRoom->examine(animal);
+        return true;
     };
+
+    void dischargeAnimalAll()
+    {
+        if (animals.size() < 1) return;
+        
+        for (Animal* animal : animals)
+        {
+            dischargeAnimal(animal);
+        }
+    }
 
     void dischargeAnimal(int animalID)
     {
@@ -623,7 +639,7 @@ class VetClinic
     void dischargeAnimal(Animal *animal)
     {
         if (!animal->diagnosticated()){
-            std::cout<<animal->getName()<<" has not been diagnosticated. It cannot leave yet.";
+            std::cout<<animal->getName()<<" has not been diagnosticated. It cannot leave yet.\n";
             return;
         }
 
@@ -631,8 +647,8 @@ class VetClinic
         if (position != animals.end())
         {
             animals.erase(position);
-            std::cout<<animal->getName()<<" has been discharged from the clinic."; 
-            delete animal;
+            std::cout<<animal->getName()<<" has been discharged from the clinic.\n"; 
+            delete animal; std::cout<<"\n\n";
             return;
         }
 
@@ -759,22 +775,34 @@ class Menu
             if (id == -1) return;
             Animal *animal = clinic->getAnimalByID(id);
             if (animal == nullptr) { return; }
-            animal->print();
+            animal->print(); return;
         } else if (input == "diagnosticate all"){
-            clinic->animalExamAll();
+            clinic->animalExamAll(); return;
         } else if (input.rfind("diagnosticate", 0) == 0){
             int id = getIntInput(input, "diagnosticate ");
             if (id == -1) return;
             clinic->animalExam(id);
-        }
+        } else if (input == "discharge all"){
+            clinic->dischargeAnimalAll(); return;
+        } else if (input.rfind("discharge", 0) == 0){
+            int id = getIntInput(input, "discharge ");
+            if (id == -1) return;
+            clinic->dischargeAnimal(id);
+            return;
+        } 
+
+        std::cout<<"Unknown command: " << input <<'\n';
+        std::cout<<"Try typing \"help\"\n";
     }
 
     void help()
     {
         std::cout<<"COMMANDS:\n";
         std::cout<<"- add animal\n";
-        std::cout<<"- diagnosticate all\n";
         std::cout<<"- diagnosticate <ID>\n";
+        std::cout<<"- diagnosticate all\n";
+        std::cout<<"- discharge <ID>\n";
+        std::cout<<"- discharge all\n";
         std::cout<<"- exit\n";
         std::cout<<"\nINFO: \n";
         std::cout<<"- help\n";
