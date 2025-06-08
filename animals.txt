@@ -10,7 +10,7 @@ Cat
 0
 Kuki
 Margarita
-Dog
 broken leg
+Dog
 small
 ~~~~

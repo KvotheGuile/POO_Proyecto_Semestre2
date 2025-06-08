@@ -405,7 +405,6 @@ class VetClinic
                 break;
             }
             i = (i + 1) % 5;
-
             if (i == 0)
             {
                 if (type == "Dog")
