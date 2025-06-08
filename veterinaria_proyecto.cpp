@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 
 class Animal {
     private:
@@ -42,9 +43,10 @@ class Animal {
         std::cout<< "My name is " << ownerName << ", and my pet is " << name << ", a " << type << ".\n";
     }
 
-    void diagnosticate(std::string diagnosis)
+    void diagnosticate(std::string diagnosis, bool show=true)
     {
         this->diagnosis = diagnosis;
+        if (!show) return;
         std::cout << "The diagnosis of " << name << " is: " << this->diagnosis << '\n';
     }
 
@@ -308,7 +310,12 @@ public:
         enter();
         std::cout << "The vet " << vet->getName() << " is examining " << animal->getName() <<"\n";
         patient = animal;
-        animal->diagnosticate("INSERT DIAGNOSIS SIMULATOR HERE");
+        
+        std::string diagnosis;
+        std::cout<<"Enter diagnosis: ";
+        std::getline(std::cin, diagnosis);
+
+        animal->diagnosticate(diagnosis);
     }
 
     ~ExamRoom() override { std::cout << getName() << " has been destroyed." << std::endl; }
@@ -350,11 +357,71 @@ class VetClinic
         employees.push_back(new Veterinarian("Rock Fuentes", 10000, "9:00-12:00"));
         employees.push_back(new Administrator("Hannah Perez", 25000, "7:00-15:00"));
 
+        loadEmployees();
+        loadAnimals();
+
         rooms.push_back(new ExamRoom("Exam Room A", employees[0], (Veterinarian*)employees[0]));
         rooms.push_back(new ExamRoom("Exam Room B", employees[0], (Veterinarian*)employees[1]));
-        
+
         reception = new Reception("Lobby", employees[2], employees[2]);
         rooms.push_back(reception);
+    };
+
+    void loadEmployees()
+    {
+
+    };
+
+    void loadAnimals()
+    {
+        // Animal builder
+        std::string name, ownerName, diagnosis, type, extra;
+        int i = 0;
+
+        // File
+        std::string line;
+        std::ifstream f("animals.txt");
+        
+        while(std::getline(f, line))
+        {
+            switch (i)
+            {
+            case 0:
+                name = line;
+                break;
+            case 1:
+                ownerName = line;
+                break;
+            case 2:
+                diagnosis = line;
+                break;
+            case 3:
+                type = line;
+                break;
+            case 4:
+                extra = line;
+                break;
+            default:
+                break;
+            }
+            i = (i + 1) % 5;
+
+            if (i == 0)
+            {
+                if (type == "Dog")
+                {
+                    animals.push_back(new Dog(name, ownerName, extra));
+                    animals.back()->diagnosticate(diagnosis, false);
+                }
+                else if (type == "Cat")
+                {
+                    animals.push_back(new Cat(name, ownerName, extra=="1"));
+                    animals.back()->diagnosticate(diagnosis, false);
+                }
+            }
+        };
+
+        f.close();
     };
 
     ~VetClinic()
@@ -560,6 +627,8 @@ class Menu
             Animal *animal = clinic->getAnimalByID(id);
             if (animal == nullptr) { return; }
             animal->print();
+        } else if (input == "diagnosticate all"){
+            clinic->animalExamAll();
         } else if (input.rfind("diagnosticate", 0) == 0){
             int id = getIntInput(input, "diagnosticate ");
             if (id == -1) return;
@@ -571,6 +640,7 @@ class Menu
     {
         std::cout<<"COMMANDS:\n";
         std::cout<<"- add animal\n";
+        std::cout<<"- diagnosticate all\n";
         std::cout<<"- diagnosticate <ID>\n";
         std::cout<<"- exit\n";
         std::cout<<"\nINFO: \n";

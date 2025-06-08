@@ -1,0 +1,12 @@
+veterinarian
+Melinda Stark
+20000
+8:30-15:00
+veterinarian
+Rock Fuentes
+10000
+9:00-12:00
+administrator
+Hannah Perez
+25000
+7:00-15:00

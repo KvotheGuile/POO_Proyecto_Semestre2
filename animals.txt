@@ -1,0 +1,16 @@
+Fang
+Martin Frias
+undiagnosed
+Dog
+medium
+Gauss
+Sebasmon
+undiagnosed
+Cat
+0
+Kuki
+Margarita
+Dog
+broken leg
+small
+~~~~
