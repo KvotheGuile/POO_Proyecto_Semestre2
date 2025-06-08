@@ -353,9 +353,9 @@ class VetClinic
         this->name = name;
         employees.clear(); rooms.clear(); animals.clear();
 
-        employees.push_back(new Veterinarian("Melinda Stark", 20000, "8:30-15:00"));
-        employees.push_back(new Veterinarian("Rock Fuentes", 10000, "9:00-12:00"));
-        employees.push_back(new Administrator("Hannah Perez", 25000, "7:00-15:00"));
+        //employees.push_back(new Veterinarian("Melinda Stark", 20000, "8:30-15:00"));
+        //employees.push_back(new Veterinarian("Rock Fuentes", 10000, "9:00-12:00"));
+        //employees.push_back(new Administrator("Hannah Perez", 25000, "7:00-15:00"));
 
         loadEmployees();
         loadAnimals();
@@ -369,7 +369,52 @@ class VetClinic
 
     void loadEmployees()
     {
+        // Employee builder
+        std::string type, name, shift;
+        int salary;
+        int i = 0;
 
+        // File
+        std::string line;
+        std::ifstream f("employees.txt");
+
+        while (std::getline(f, line)){
+            switch (i)
+            {
+            case 0:
+                type = line;
+                break;
+            case 1:
+                name = line;
+                break;
+            case 2:
+                try{ salary = stoi(line); }
+                catch(...) { salary = 1000; }
+                break;
+            case 3:
+                shift = line;
+            
+            default:
+                break;
+            }
+            i = (i + 1) % 4;
+
+            if (i == 0)
+            {
+                if (type == "veterinarian")
+                {
+                    employees.push_back(new Veterinarian(name, salary, shift));
+                }
+                else if (type == "administrator")
+                {
+                    employees.push_back(new Administrator(name, salary, shift));
+                }
+                else{
+                    employees.push_back(new Employee(name, salary));
+                }
+            }
+        };
+        f.close();
     };
 
     void loadAnimals()
