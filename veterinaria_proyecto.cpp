@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 class Animal {
@@ -21,7 +22,7 @@ class Animal {
         this->name = name;
         this->ownerName = ownerName;
         this->type = type;
-        this->patientID = ++animalCount;
+        this->patientID = animalCount++;
 
         this->diagnosis = "undiagnosed";
     }
@@ -424,6 +425,11 @@ class VetClinic
         }
     };
 
+    void animalExam(std::string animalID)
+    {
+
+    }
+
     void animalExam(Animal *animal)
     {
         ExamRoom *examRoom = getExamRoom();
@@ -444,6 +450,17 @@ class VetClinic
         std::cout<<"There isn't a free exam room.\n";
         return nullptr;
     };
+
+    Animal *getAnimalByID(int id)
+    {
+        for (Animal* animal : animals)
+        {
+            if (animal->getPatientID() == id) 
+                return animal;
+        }
+
+        return nullptr;
+    }
 
     void admitPet(Animal *animal)
     {
@@ -534,7 +551,15 @@ class Menu
         } else if (input == "info animals" || input == "i a"){
             clinic->infoAnimals(); return;
         } else if (input == "add animal" || input == "add a"){
-            addAnimal();
+            addAnimal(); return;
+        } else if (input.rfind("animal info", 0) == 0){
+            int id = getIntInput(input, "animal info ");
+            if (id == -1) return;
+            Animal *animal = clinic->getAnimalByID(id);
+            if (animal == nullptr) {
+                std::cout<<"No animal has the ID "<<id<<"\n"; return; 
+            }
+            animal->print();
         }
     }
 
@@ -549,6 +574,21 @@ class Menu
         std::cout<<"- info employees\n";
         std::cout<<"- info rooms\n";
         std::cout<<"- info animals\n";
+        std::cout<<"- animal info <ID>\n";
+    }
+
+    int getIntInput(std::string input, std::string command)
+    {
+        if (input.compare(0, command.size(), command) == 0)
+            input.erase(0, command.size());
+        
+        try{
+            return std::stoi(input);
+        }
+        catch (...){
+            std::cout<<"\""<<input<<"\" is not a number";
+            return -1;
+        }
     }
 
     ~Menu()
